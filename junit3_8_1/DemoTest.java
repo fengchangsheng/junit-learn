@@ -18,14 +18,28 @@ public class DemoTest extends TestCase {
 //        System.out.println("just test...");
 //    }
 
+    private void testPrivateMethod(){
+        System.out.println("private method");
+    }
+
+    public static void testStaticMethod(){
+        System.out.println("static method");
+    }
+
+    public void testError(){
+        System.out.println("testError");
+        System.out.println(1/0);
+    }
+
     public void testSimple(){
+        System.out.println("testSimple has invoke..");
         assertTrue(true);
         assertTrue(false);
     }
 
     public void testOther(){
         System.out.println(55555);
-//        System.out.println(1/0);
+        System.out.println(1/0);
     }
 
     public static void main(String[] args) {
