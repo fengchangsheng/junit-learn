@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 /**
  * 哪些方法可以执行  private static  public
@@ -20,7 +19,7 @@ public class MyTestRunner {
     private static List<Method> methodList = new ArrayList();
     private static int failuresNum = 0;
     private static int errorNum = 0;
-    private static List<Exception> exceptions = new ArrayList<>();
+    private static int current = 0;
     private static Map<String, Object> errorMap = new HashMap<>();
 
     public static Constructor getConstructor(Class clazz) throws NoSuchMethodException {
@@ -56,10 +55,15 @@ public class MyTestRunner {
         long endNanoTime = System.nanoTime();
         long runTime = endTime - startTime;
         long runNanoTime = endNanoTime - startNanoTime;
-        System.out.println("run with " + runTime);
+        System.out.println();
+        System.out.println("run with time " + runTime);
         System.out.println("run with nanoTime " + runNanoTime);
     }
 
+    /**
+     * 如果每个测试方法都绑定到一当前TestClass上
+     * @param clazzName
+     */
     public static void doRun(String clazzName) {
         try {
             Class clazz = Class.forName(clazzName);
@@ -83,7 +87,7 @@ public class MyTestRunner {
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         } finally {
             recordFailures();
         }
@@ -91,25 +95,44 @@ public class MyTestRunner {
 
     public static void recordFailures() {
         System.out.println("There were " + errorNum + " error:");
-        for (Exception exception : exceptions) {
-            System.out.println(exception.getCause());
+        int i = 0;
+        for (Map.Entry<String, Object> stringObjectEntry : errorMap.entrySet()) {
+            Exception exception = (Exception) stringObjectEntry.getValue();
+            System.out.println(++i + ") " + stringObjectEntry.getKey() + "  "+ exception.getCause());
         }
         System.out.println("There were " + failuresNum + " failures:");
 
+        System.out.println();
+        System.out.println("FAILURES!!!");
+        System.out.println("Tests run: "+ (current+1) +",  Failures: "+ failuresNum + ",  Errors: "+ errorNum);
     }
 
+    /**
+     * 这里要保证能记录每个测试方法的运行时异常   并且不影响下一个方法的执行
+     * @param object
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     private static void invokeMethods(Object object) throws InvocationTargetException, IllegalAccessException {
         try {
-            for (Method method : methodList) {
-                method.invoke(object);
-            }
+            doInvokes(object);
         } catch (InvocationTargetException et) {
             errorNum++;
-            exceptions.add(et);
-//            errorMap.put();
-//            throw et;
+            errorMap.put(methodList.get(current).getName(), et);
+            if (current != methodList.size()-1) {//测试方法没有执行完   继续执行下一个
+                current++;
+                invokeMethods(object);
+            }
         } catch (IllegalAccessException ea) {
             throw ea;
+        }
+    }
+
+    private static void doInvokes(Object object) throws InvocationTargetException, IllegalAccessException {
+        for (int i = current; i < methodList.size(); i++) {
+            Method method = methodList.get(i);
+            method.invoke(object);
+            current++;
         }
     }
 

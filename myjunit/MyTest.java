@@ -4,7 +4,7 @@
 public class MyTest extends MyTestCase{
 
     public void testError1(){
-        System.out.println("error method 1");
+        System.out.println("error method 1 has invoke..");
         System.out.println(1/0);
     }
 
@@ -15,7 +15,7 @@ public class MyTest extends MyTestCase{
     }
 
     public void testError(){
-        System.out.println("error method");
+        System.out.println("error method has invoke..");
         System.out.println(1/0);
     }
 

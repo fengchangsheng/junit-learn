@@ -28,7 +28,7 @@ public class DemoTest extends TestCase {
 
     public void testError(){
         System.out.println("testError");
-        System.out.println(1/0);
+//        System.out.println(1/0);
     }
 
     public void testSimple(){
@@ -39,7 +39,7 @@ public class DemoTest extends TestCase {
 
     public void testOther(){
         System.out.println(55555);
-        System.out.println(1/0);
+//        System.out.println(1/0);
     }
 
     public static void main(String[] args) {
