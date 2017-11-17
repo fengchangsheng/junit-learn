@@ -18,9 +18,9 @@ public class DemoTest extends TestCase {
 //        System.out.println("just test...");
 //    }
 
-    private void testPrivateMethod(){
-        System.out.println("private method");
-    }
+//    private void testPrivateMethod(){
+//        System.out.println("private method");
+//    }
 
     public static void testStaticMethod(){
         System.out.println("static method");
@@ -34,7 +34,7 @@ public class DemoTest extends TestCase {
     public void testSimple(){
         System.out.println("testSimple has invoke..");
         assertTrue(true);
-        assertTrue(false);
+//        assertTrue(false);
     }
 
     public void testOther(){

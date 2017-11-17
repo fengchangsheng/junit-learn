@@ -1,10 +1,7 @@
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 哪些方法可以执行  private static  public
@@ -17,10 +14,11 @@ import java.util.Map;
 public class MyTestRunner {
 
     private static List<Method> methodList = new ArrayList();
-    private static int failuresNum = 0;
+    private static int failureNum = 0;
     private static int errorNum = 0;
     private static int current = 0;
     private static Map<String, Object> errorMap = new HashMap<>();
+    private static Map<String, Object> failureMap = new HashMap<>();
 
     public static Constructor getConstructor(Class clazz) throws NoSuchMethodException {
         try {
@@ -89,23 +87,49 @@ public class MyTestRunner {
         } catch (InvocationTargetException e) {
 //            e.printStackTrace();
         } finally {
-            recordFailures();
+            printRecord();
         }
     }
 
-    public static void recordFailures() {
-        System.out.println("There were " + errorNum + " error:");
-        int i = 0;
-        for (Map.Entry<String, Object> stringObjectEntry : errorMap.entrySet()) {
-            Exception exception = (Exception) stringObjectEntry.getValue();
-            System.out.println(++i + ") " + stringObjectEntry.getKey() + "  "+ exception.getCause());
-        }
-        System.out.println("There were " + failuresNum + " failures:");
-
+    /**
+     * 打印内容
+     * failure和error的输出格式相同  如何设计  根据type判断不好
+     * 对单双数目的单词形态  通过if来判断吗
+     */
+    public static void printRecord() {
         System.out.println();
-        System.out.println("FAILURES!!!");
-        System.out.println("Tests run: "+ (current+1) +",  Failures: "+ failuresNum + ",  Errors: "+ errorNum);
+        if (errorNum > 0) {
+            System.out.println("There were " + errorNum + " errors:");
+            printRecordDetail(1);
+        }
+
+        if (failureNum > 0){
+            System.out.println("There were " + failureNum + " failures:");
+            printRecordDetail(2);
+        }
+
+        if (errorNum > 0 || failureNum > 0) {
+            System.out.println("FAILURES!!!");
+            System.out.println("Tests run: "+ (current+1) +",  Failures: "+ failureNum + ",  Errors: "+ errorNum);
+        }
     }
+
+    private static void printRecordDetail(int type){
+        Set<Map.Entry<String,Object>> entries = null;
+        if (type == 1) {
+            entries = errorMap.entrySet();
+        } else {
+            entries = failureMap.entrySet();
+        }
+
+        int i = 0;
+        for (Map.Entry<String, Object> stringObjectEntry : entries) {
+            Throwable throwable = (Throwable) stringObjectEntry.getValue();
+            System.out.println(++i + ") " + stringObjectEntry.getKey() + "  "+ throwable.getCause());
+        }
+        System.out.println();
+    }
+
 
     /**
      * 这里要保证能记录每个测试方法的运行时异常   并且不影响下一个方法的执行
@@ -117,8 +141,14 @@ public class MyTestRunner {
         try {
             doInvokes(object);
         } catch (InvocationTargetException et) {
-            errorNum++;
-            errorMap.put(methodList.get(current).getName(), et);
+            Throwable throwable = et.getCause();
+            if (throwable instanceof AssertFailedError) {
+                failureNum++;
+                failureMap.put(methodList.get(current).getName(), et);
+            } else {
+                errorNum++;
+                errorMap.put(methodList.get(current).getName(), et);
+            }
             if (current != methodList.size()-1) {//测试方法没有执行完   继续执行下一个
                 current++;
                 invokeMethods(object);
@@ -135,5 +165,9 @@ public class MyTestRunner {
             current++;
         }
     }
+
+    /**
+     * TODO: 私有方法的判断 归为failure
+     */
 
 }
