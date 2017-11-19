@@ -34,12 +34,12 @@ public class DemoTest extends TestCase {
     public void testSimple(){
         System.out.println("testSimple has invoke..");
         assertTrue(true);
-//        assertTrue(false);
+        assertTrue(false);
     }
 
     public void testOther(){
         System.out.println(55555);
-//        System.out.println(1/0);
+        System.out.println(1/0);
     }
 
     public static void main(String[] args) {

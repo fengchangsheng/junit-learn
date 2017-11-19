@@ -1,3 +1,6 @@
+package framework;
+
+
 /**
  * Created by Lucare.Feng on 2017/11/4.
  * 断言失败  如何记录   以异常形式抛出？
