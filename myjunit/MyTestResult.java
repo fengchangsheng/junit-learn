@@ -32,7 +32,10 @@ public class MyTestResult {
             }
             checkAndSaveMethods(methods);
 //            MyTestResult testResult = new MyTestResult();
-            invokeMethods(object);
+            // 改进前 暴力方法 靠的是反复调用
+//            invokeMethods(object);
+
+            invokeMethodNew(object);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
@@ -56,7 +59,6 @@ public class MyTestResult {
         return clazz.getConstructor(new Class[0]);
     }
 
-
     /**
      * 检测并保存待测试方法(根据约定testA)
      */
@@ -68,17 +70,63 @@ public class MyTestResult {
         }
     }
 
+    public void invokeMethodNew(Object object) {
+        for (int i = 0; i < methodList.size(); i++) {
+            Method method = methodList.get(i);
+            runAndRecord(object, method);
+            current++;
+        }
+    }
+
+    /**
+     * 对failure和error的处理  不再向上抛出  可保证for循环继续执行
+     */
+    private void runAndRecord(Object object, Method method){
+        try {
+            runBase(object, method);
+        } catch (AssertFailedError error) {
+            failureNum++;
+            failureMap.put(methodList.get(current).getName(), error);
+        } catch (Throwable throwable) {
+            errorNum++;
+            errorMap.put(methodList.get(current).getName(), throwable);
+        }
+    }
+
+    /**
+     * 每个测试方法的调用骨架 (setUp -> testXX -> tearDown)
+     */
+    private void runBase(Object object, Method method) throws Throwable {
+//        setUp();
+        try {
+            invokeOne(object, method);
+        } finally {
+//            tearDown();
+        }
+    }
+
+    /**
+     * 反射调用测试方法
+     */
+    private void invokeOne(Object object, Method method) throws Throwable{
+        try {
+            method.invoke(object);
+        } catch (IllegalAccessException e) {
+            throw e;
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        }
+    }
+
     /**
      * 这里要保证能记录每个测试方法的运行时异常   并且不影响下一个方法的执行
-     * @param object
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
+     * @deprecated
      */
     public void invokeMethods(Object object) throws InvocationTargetException, IllegalAccessException {
         try {
             doInvokes(object);
         } catch (InvocationTargetException et) {
-            Throwable throwable = et.getCause();
+            Throwable throwable = et.getCause();// et.getTargetException();
             if (throwable instanceof AssertFailedError) {
                 failureNum++;
                 failureMap.put(methodList.get(current).getName(), et);
@@ -95,6 +143,7 @@ public class MyTestResult {
         }
     }
 
+    @Deprecated
     private void doInvokes(Object object) throws InvocationTargetException, IllegalAccessException {
         for (int i = current; i < methodList.size(); i++) {
             Method method = methodList.get(i);

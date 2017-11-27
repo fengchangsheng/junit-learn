@@ -51,7 +51,7 @@ public class MyResultPrint {
         int current = testResult.getCurrent();
         if (errorNum > 0 || failureNum > 0) {
             printStream.println("FAILURES!!!");
-            printStream.println("Tests run: "+ (current+1) +",  Failures: "+ failureNum + ",  Errors: "+ errorNum);
+            printStream.println("Tests run: "+ current +",  Failures: "+ failureNum + ",  Errors: "+ errorNum);
         }
     }
 
@@ -59,7 +59,9 @@ public class MyResultPrint {
         int i = 0;
         for (Map.Entry<String, Object> stringObjectEntry : entries) {
             Throwable throwable = (Throwable) stringObjectEntry.getValue();
-            printStream.println(++i + ") " + stringObjectEntry.getKey() + "  " + throwable.getCause());
+            // 这里将异常归为两类  AssertFailedError 和 Throwable    两种类型getCause()都为null
+            // 不再是之前的InvocationTargetException类型的可以 getCause (getTargetException)
+            printStream.println(++i + ") " + stringObjectEntry.getKey() + "  " + throwable);
         }
         printStream.println();
     }
