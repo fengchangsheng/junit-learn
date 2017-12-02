@@ -22,8 +22,8 @@ public class MyTestRunner {
         long endNanoTime = System.nanoTime();
         long runTime = endTime - startTime;
         long runNanoTime = endNanoTime - startNanoTime;
-        resultPrint = new MyResultPrint(System.out, testResult);
-        resultPrint.printResult(runTime);
+        resultPrint = new MyResultPrint(System.out);
+        resultPrint.printResult(runTime, testResult);
     }
 
     public static MyTestResult doRun(String clazzName) {

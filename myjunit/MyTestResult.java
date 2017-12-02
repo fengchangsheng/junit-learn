@@ -83,10 +83,18 @@ public class MyTestResult {
         try {
             runBase(object, method);
         } catch (AssertFailedError error) {
-            failureMap.put(methodList.get(current).getName(), error);
+            addError(methodList.get(current).getName(), error);
         } catch (Throwable throwable) {
-            errorMap.put(methodList.get(current).getName(), throwable);
+            addFailure(methodList.get(current).getName(), throwable);
         }
+    }
+
+    private void addError(String name, Throwable error){
+        failureMap.put(name, error);
+    }
+
+    private void addFailure(String name, Throwable throwable){
+        errorMap.put(name, throwable);
     }
 
     /**
@@ -164,5 +172,9 @@ public class MyTestResult {
 
     public int getCurrent() {
         return current;
+    }
+
+    public boolean isSuccessful(){
+        return getFailureNum() == 0 && getErrorNum() ==  0;
     }
 }

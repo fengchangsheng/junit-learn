@@ -8,18 +8,16 @@ import java.util.Set;
 public class MyResultPrint {
 
     private PrintStream printStream;
-    private MyTestResult testResult;
 
-    public MyResultPrint(PrintStream printStream, MyTestResult testResult) {
+    public MyResultPrint(PrintStream printStream) {
         this.printStream = printStream;
-        this.testResult = testResult;
     }
 
-    public void printResult(long runTime){
+    public void printResult(long runTime, MyTestResult testResult){
         printTime(runTime);
-        printError();
-        printFailure();
-        printFoot();
+        printError(testResult);
+        printFailure(testResult);
+        printFoot(testResult);
     }
 
     private void printTime(long runTime){
@@ -28,7 +26,7 @@ public class MyResultPrint {
 //        printStream.println("run with nanoTime " + runNanoTime);
     }
 
-    private void printError(){
+    private void printError(MyTestResult testResult){
         printStream.println();
         int errorNum = testResult.getErrorNum();
         if (errorNum > 0) {
@@ -37,7 +35,7 @@ public class MyResultPrint {
         }
     }
 
-    private void printFailure() {
+    private void printFailure(MyTestResult testResult) {
         int failureNum = testResult.getFailureNum();
         if (failureNum > 0){
             printStream.println("There were " + failureNum + " failures:");
@@ -45,13 +43,16 @@ public class MyResultPrint {
         }
     }
 
-    private void printFoot(){
+    private void printFoot(MyTestResult testResult){
         int errorNum = testResult.getErrorNum();
         int failureNum = testResult.getFailureNum();
         int current = testResult.getCurrent();
-        if (errorNum > 0 || failureNum > 0) {
+        if (testResult.isSuccessful()) {
+            printStream.print("OK");
+            printStream.println(" (" + current + " test" + (current == 1 ? "": "s") + ")");
+        } else {
             printStream.println("FAILURES!!!");
-            printStream.println("Tests run: "+ current +",  Failures: "+ failureNum + ",  Errors: "+ errorNum);
+            printStream.println("Tests run: " + current + ",  Failures: " + failureNum + ",  Errors: " + errorNum);
         }
     }
 

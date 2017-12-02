@@ -1,4 +1,6 @@
+import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 /**
@@ -22,6 +24,17 @@ public class DemoTest extends TestCase {
 //        System.out.println("private method");
 //    }
 
+
+    @Override
+    protected void setUp() throws Exception {
+        System.out.println("===============>> hello, i have set up.");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        System.out.println("<<============== bye, i have tear down.");
+    }
+
     public static void testStaticMethod(){
         System.out.println("static method");
     }
@@ -34,13 +47,22 @@ public class DemoTest extends TestCase {
     public void testSimple(){
         System.out.println("testSimple has invoke..");
         assertTrue(true);
-        assertTrue(false);
+//        assertTrue(false);
     }
 
     public void testOther(){
         System.out.println(55555);
         System.out.println(1/0);
     }
+
+//    public static Test suite(){
+//        System.out.println(" is a suite collection.");
+//        TestSuite suite = new TestSuite();
+//        suite.addTest(new DemoTest("testError"));
+//        suite.addTest(new DemoTest("testSimple"));
+//
+//        return suite;
+//    }
 
     public static void main(String[] args) {
         try {
