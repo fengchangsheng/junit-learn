@@ -1,7 +1,17 @@
 /**
  * Created by Lucare.Feng on 2017/11/4.
  */
-public class MyTest extends MyTestCase{
+public class MyDemoTest extends MyTestCase{
+
+    @Override
+    protected void setUp() throws Exception {
+        System.out.println(" this is a setUp.");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        System.out.println(" this is a tearDown.");
+    }
 
     public void testError1(){
         System.out.println("error method 1 has invoke..");
@@ -24,6 +34,6 @@ public class MyTest extends MyTestCase{
     }
 
     public static void main(String[] args) {
-        MyTestRunner.main(new String[]{"MyTest"});
+        MyTestRunner.main(new String[]{"MyDemoTest"});
     }
 }

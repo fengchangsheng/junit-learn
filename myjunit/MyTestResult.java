@@ -12,8 +12,6 @@ import java.util.*;
 public class MyTestResult {
 
     private List<Method> methodList = new ArrayList();
-    private int failureNum = 0;
-    private int errorNum = 0;
     private int current = 0;
     private Map<String, Object> errorMap = new HashMap<>();
     private Map<String, Object> failureMap = new HashMap<>();
@@ -23,12 +21,12 @@ public class MyTestResult {
             Class clazz = Class.forName(clazzName);
             Method[] methods = clazz.getMethods();
             Constructor constructor = getConstructor(clazz);
-            Object object;
+            MyTestCase object;
             if (constructor.getParameterTypes().length == 0) {
-                object = constructor.newInstance(new Object[0]);
+                object = (MyTestCase) constructor.newInstance(new Object[0]);
             } else {
                 String myName = "lucare.Feng";
-                object = constructor.newInstance(myName);
+                object = (MyTestCase) constructor.newInstance(myName);
             }
             checkAndSaveMethods(methods);
 //            MyTestResult testResult = new MyTestResult();
@@ -70,7 +68,7 @@ public class MyTestResult {
         }
     }
 
-    public void invokeMethodNew(Object object) {
+    public void invokeMethodNew(MyTestCase object) {
         for (int i = 0; i < methodList.size(); i++) {
             Method method = methodList.get(i);
             runAndRecord(object, method);
@@ -81,14 +79,12 @@ public class MyTestResult {
     /**
      * 对failure和error的处理  不再向上抛出  可保证for循环继续执行
      */
-    private void runAndRecord(Object object, Method method){
+    private void runAndRecord(MyTestCase object, Method method){
         try {
             runBase(object, method);
         } catch (AssertFailedError error) {
-            failureNum++;
             failureMap.put(methodList.get(current).getName(), error);
         } catch (Throwable throwable) {
-            errorNum++;
             errorMap.put(methodList.get(current).getName(), throwable);
         }
     }
@@ -96,19 +92,19 @@ public class MyTestResult {
     /**
      * 每个测试方法的调用骨架 (setUp -> testXX -> tearDown)
      */
-    private void runBase(Object object, Method method) throws Throwable {
-//        setUp();
+    private void runBase(MyTestCase object, Method method) throws Throwable {
+        object.setUp();
         try {
             invokeOne(object, method);
         } finally {
-//            tearDown();
+            object.tearDown();
         }
     }
 
     /**
      * 反射调用测试方法
      */
-    private void invokeOne(Object object, Method method) throws Throwable{
+    private void invokeOne(MyTestCase object, Method method) throws Throwable{
         try {
             method.invoke(object);
         } catch (IllegalAccessException e) {
@@ -128,10 +124,8 @@ public class MyTestResult {
         } catch (InvocationTargetException et) {
             Throwable throwable = et.getCause();// et.getTargetException();
             if (throwable instanceof AssertFailedError) {
-                failureNum++;
                 failureMap.put(methodList.get(current).getName(), et);
             } else {
-                errorNum++;
                 errorMap.put(methodList.get(current).getName(), et);
             }
             if (current != methodList.size()-1) {//测试方法没有执行完   继续执行下一个
@@ -161,26 +155,14 @@ public class MyTestResult {
     }
 
     public int getFailureNum() {
-        return failureNum;
-    }
-
-    public void setFailureNum(int failureNum) {
-        this.failureNum = failureNum;
+        return failureMap.size();
     }
 
     public int getErrorNum() {
-        return errorNum;
-    }
-
-    public void setErrorNum(int errorNum) {
-        this.errorNum = errorNum;
+        return errorMap.size();
     }
 
     public int getCurrent() {
         return current;
-    }
-
-    public void setCurrent(int current) {
-        this.current = current;
     }
 }
