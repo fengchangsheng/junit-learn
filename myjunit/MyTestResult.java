@@ -1,4 +1,5 @@
 import framework.AssertFailedError;
+import framework.MyTestFailure;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +16,9 @@ public class MyTestResult {
     private int current = 0;
     private Map<String, Object> errorMap = new HashMap<>();
     private Map<String, Object> failureMap = new HashMap<>();
+
+    private List<MyTestFailure> errorList = new ArrayList<>();
+    private List<MyTestFailure> failureList = new ArrayList<>();
 
     public void run(String clazzName){
         try {
@@ -82,19 +86,21 @@ public class MyTestResult {
     private void runAndRecord(MyTestCase object, Method method){
         try {
             runBase(object, method);
-        } catch (AssertFailedError error) {
-            addError(methodList.get(current).getName(), error);
-        } catch (Throwable throwable) {
-            addFailure(methodList.get(current).getName(), throwable);
+        } catch (AssertFailedError e) {
+            addFailure(e);
+        } catch (Throwable e) {
+            addError(e);
         }
     }
 
-    private void addError(String name, Throwable error){
-        failureMap.put(name, error);
+    private void addFailure(Throwable throwable){
+        String methodName = methodList.get(current).getName();
+        failureList.add(new MyTestFailure(methodName,throwable));
     }
 
-    private void addFailure(String name, Throwable throwable){
-        errorMap.put(name, throwable);
+    private void addError(Throwable throwable){
+        String methodName = methodList.get(current).getName();
+        errorList.add(new MyTestFailure(methodName,throwable));
     }
 
     /**
@@ -154,20 +160,20 @@ public class MyTestResult {
         }
     }
 
-    public Set<Map.Entry<String, Object>> getErrorEntrys(){
-        return errorMap.entrySet();
+    public List<MyTestFailure> getErrorList() {
+        return errorList;
     }
 
-    public Set<Map.Entry<String, Object>> getFailureEntrys(){
-        return failureMap.entrySet();
+    public List<MyTestFailure> getFailureList() {
+        return failureList;
     }
 
     public int getFailureNum() {
-        return failureMap.size();
+        return failureList.size();
     }
 
     public int getErrorNum() {
-        return errorMap.size();
+        return errorList.size();
     }
 
     public int getCurrent() {

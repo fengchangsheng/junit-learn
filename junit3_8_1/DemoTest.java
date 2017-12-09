@@ -1,3 +1,4 @@
+import junit.DemoTwoTest;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -47,7 +48,7 @@ public class DemoTest extends TestCase {
     public void testSimple(){
         System.out.println("testSimple has invoke..");
         assertTrue(true);
-//        assertTrue(false);
+        assertTrue(false);
     }
 
     public void testOther(){
@@ -55,14 +56,15 @@ public class DemoTest extends TestCase {
         System.out.println(1/0);
     }
 
-//    public static Test suite(){
-//        System.out.println(" is a suite collection.");
-//        TestSuite suite = new TestSuite();
+    public static Test suite(){
+        System.out.println(" is a suite collection.");
+        TestSuite suite = new TestSuite();
 //        suite.addTest(new DemoTest("testError"));
 //        suite.addTest(new DemoTest("testSimple"));
-//
-//        return suite;
-//    }
+        suite.addTestSuite(DemoTest.class);
+        suite.addTestSuite(DemoTwoTest.class);
+        return suite;
+    }
 
     public static void main(String[] args) {
         try {

@@ -1,4 +1,7 @@
+import framework.MyTestFailure;
+
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,25 +25,16 @@ public class MyResultPrint {
 
     private void printTime(long runTime){
         printStream.println();
-        printStream.println("run with time " + runTime);
+        printStream.println("Time: " + runTime);
 //        printStream.println("run with nanoTime " + runNanoTime);
     }
 
     private void printError(MyTestResult testResult){
-        printStream.println();
-        int errorNum = testResult.getErrorNum();
-        if (errorNum > 0) {
-            printStream.println("There were " + errorNum + " errors:");
-            printRecordDetail(testResult.getErrorEntrys());
-        }
+        printRecordDetail(testResult.getErrorList(), testResult.getErrorNum(), "error");
     }
 
     private void printFailure(MyTestResult testResult) {
-        int failureNum = testResult.getFailureNum();
-        if (failureNum > 0){
-            printStream.println("There were " + failureNum + " failures:");
-            printRecordDetail(testResult.getFailureEntrys());
-        }
+        printRecordDetail(testResult.getFailureList(), testResult.getFailureNum(),  "failure");
     }
 
     private void printFoot(MyTestResult testResult){
@@ -56,6 +50,24 @@ public class MyResultPrint {
         }
     }
 
+    private void printRecordDetail(List<MyTestFailure> testFailures, int count, String type){
+        if (count == 0) {
+            return;
+        }
+        if (count == 1) {
+            printStream.println("There was " + count + " "+ type + ":");
+        } else {
+            printStream.println("There were " + count + " "+ type + "s:");
+        }
+
+        int i = 0;
+        for (MyTestFailure myTestFailure : testFailures) {
+            printStream.println(++i + ") " + myTestFailure.getMethodName() + "  " + myTestFailure.getThrowable());
+        }
+        printStream.println();
+    }
+
+    @Deprecated
     private void printRecordDetail(Set<Map.Entry<String, Object>> entries) {
         int i = 0;
         for (Map.Entry<String, Object> stringObjectEntry : entries) {
