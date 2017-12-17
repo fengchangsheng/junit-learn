@@ -1,4 +1,4 @@
-import framework.MyTestFailure;
+package framework;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -63,6 +63,7 @@ public class MyResultPrint {
         int i = 0;
         for (MyTestFailure myTestFailure : testFailures) {
             printStream.println(++i + ") " + myTestFailure.getMethodName() + "  " + myTestFailure.getThrowable());
+            printStream.println(myTestFailure.getFilteredTrace());
         }
         printStream.println();
     }

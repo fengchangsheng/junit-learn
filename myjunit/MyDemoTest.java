@@ -1,7 +1,10 @@
+import framework.MyTestCase;
+import framework.MyTestRunner;
+
 /**
  * Created by Lucare.Feng on 2017/11/4.
  */
-public class MyDemoTest extends MyTestCase{
+public class MyDemoTest extends MyTestCase {
 
     @Override
     protected void setUp() throws Exception {

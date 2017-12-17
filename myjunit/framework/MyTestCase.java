@@ -1,4 +1,5 @@
-import framework.MyAssert;
+package framework;
+
 
 /**
  * Created by Lucare.Feng on 2017/11/4.

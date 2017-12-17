@@ -1,3 +1,4 @@
+package framework;
 
 /**
  * 哪些方法可以执行  private static  public

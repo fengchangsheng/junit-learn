@@ -1,5 +1,4 @@
-import framework.AssertFailedError;
-import framework.MyTestFailure;
+package framework;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

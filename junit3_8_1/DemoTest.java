@@ -56,15 +56,15 @@ public class DemoTest extends TestCase {
         System.out.println(1/0);
     }
 
-    public static Test suite(){
-        System.out.println(" is a suite collection.");
-        TestSuite suite = new TestSuite();
-//        suite.addTest(new DemoTest("testError"));
-//        suite.addTest(new DemoTest("testSimple"));
-        suite.addTestSuite(DemoTest.class);
-        suite.addTestSuite(DemoTwoTest.class);
-        return suite;
-    }
+//    public static Test suite(){
+//        System.out.println(" is a suite collection.");
+//        TestSuite suite = new TestSuite(DemoTest.class, "testError");
+////        suite.addTest(new DemoTest("testError"));
+////        suite.addTest(new DemoTest("testSimple"));
+////        suite.addTestSuite(DemoTest.class);
+////        suite.addTestSuite(DemoTwoTest.class);
+//        return suite;
+//    }
 
     public static void main(String[] args) {
         try {
